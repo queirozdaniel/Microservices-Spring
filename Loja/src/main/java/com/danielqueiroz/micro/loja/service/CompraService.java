@@ -2,11 +2,13 @@ package com.danielqueiroz.micro.loja.service;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.danielqueiroz.micro.loja.controller.dto.CompraDTO;
 import com.danielqueiroz.micro.loja.controller.dto.InfoFonecedorDTO;
 
+@Service
 public class CompraService {
 
 	public void realizaCompra(CompraDTO compra) {
@@ -18,8 +20,8 @@ public class CompraService {
 					null, 
 					InfoFonecedorDTO.class);
 		
-		System.out.println(exchange);
-		
+		System.out.println(exchange.getBody().getEndereco());
+
 	}
 
 }
