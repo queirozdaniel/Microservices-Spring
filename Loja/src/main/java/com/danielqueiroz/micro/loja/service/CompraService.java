@@ -1,6 +1,7 @@
 package com.danielqueiroz.micro.loja.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class CompraService {
 	@Autowired
 	private RestTemplate client;
 
+	@Autowired
+	private DiscoveryClient eurekaClient;
+	
 	public void realizaCompra(CompraDTO compra) {
 
 		ResponseEntity<InfoFonecedorDTO> exchange = client.exchange(
@@ -22,6 +26,8 @@ public class CompraService {
 					HttpMethod.GET,
 					null, 
 					InfoFonecedorDTO.class);
+		
+		eurekaClient.getInstances("fornecedor").stream().forEach(fornecedor -> System.out.println("localhost:"+fornecedor.getPort()));
 		
 		System.out.println(exchange.getBody().getEndereco());
 	}
