@@ -1,6 +1,6 @@
 package com.danielqueiroz.micro.loja.controller.dto;
 
-public class InfoFonecedorDTO {
+public class InfoFornecedorDTO {
 
 	private String endereco;
 

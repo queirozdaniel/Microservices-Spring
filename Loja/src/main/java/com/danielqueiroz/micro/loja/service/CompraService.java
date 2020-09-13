@@ -1,35 +1,33 @@
 package com.danielqueiroz.micro.loja.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
+import com.danielqueiroz.micro.loja.client.FornecedorClient;
 import com.danielqueiroz.micro.loja.controller.dto.CompraDTO;
-import com.danielqueiroz.micro.loja.controller.dto.InfoFonecedorDTO;
+import com.danielqueiroz.micro.loja.controller.dto.InfoFornecedorDTO;
+import com.danielqueiroz.micro.loja.controller.dto.InfoPedidoDTO;
+import com.danielqueiroz.micro.loja.model.Compra;
 
 @Service
 public class CompraService {
 	
 	@Autowired
-	private RestTemplate client;
-
-	@Autowired
-	private DiscoveryClient eurekaClient;
+	private FornecedorClient fornecedorClient;
 	
-	public void realizaCompra(CompraDTO compra) {
+	public Compra realizaCompra(CompraDTO compra) {
+		InfoFornecedorDTO infoFornecedor = fornecedorClient.getInfoFornecedor(compra.getEndereco().getEstado());
+		
+		InfoPedidoDTO pedido = fornecedorClient.realizaPedido(compra.getItens());
+		
+		System.out.println(infoFornecedor.getEndereco());
 
-		ResponseEntity<InfoFonecedorDTO> exchange = client.exchange(
-					"http://fornecedor/info/" + compra.getEndereco().getEstado(), 
-					HttpMethod.GET,
-					null, 
-					InfoFonecedorDTO.class);
+		Compra compraSalva = new Compra();
+		compraSalva.setPedidoId(pedido.getId());
+		compraSalva.setTemporDePreparo(pedido.getTempoDePreparo());
+		compraSalva.setEnderecoDestino(compra.getEndereco().toString());
 		
-		eurekaClient.getInstances("fornecedor").stream().forEach(fornecedor -> System.out.println("localhost:"+fornecedor.getPort()));
-		
-		System.out.println(exchange.getBody().getEndereco());
+		return compraSalva;
 	}
 
 }
