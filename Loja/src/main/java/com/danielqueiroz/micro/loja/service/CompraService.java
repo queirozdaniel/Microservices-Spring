@@ -10,6 +10,7 @@ import com.danielqueiroz.micro.loja.controller.dto.CompraDTO;
 import com.danielqueiroz.micro.loja.controller.dto.InfoFornecedorDTO;
 import com.danielqueiroz.micro.loja.controller.dto.InfoPedidoDTO;
 import com.danielqueiroz.micro.loja.model.Compra;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @Service
 public class CompraService {
@@ -19,6 +20,7 @@ public class CompraService {
 	@Autowired
 	private FornecedorClient fornecedorClient;
 	
+	@HystrixCommand(fallbackMethod = "realizaCompraFallback")
 	public Compra realizaCompra(CompraDTO compra) {
 		final String estado = compra.getEndereco().getEstado();
 		LOG.info("buscando informações do fornecedor de {}", estado);
@@ -35,4 +37,10 @@ public class CompraService {
 		return compraSalva;
 	}
 
+	public Compra realizaCompraFallback(CompraDTO compra) {
+		Compra compraFallback = new Compra();
+		compraFallback.setEnderecoDestino(compra.getEndereco().toString());
+		return compraFallback;
+	}
+	
 }
