@@ -6,5 +6,5 @@ spring:
       server:
         git:
           uri: https://github.com/queirozdaniel/Microservices-Spring
-          search-paths: microservice-repo/fornecedor
+          search-paths: microservice-repo/fornecedor, microservice-repo/loja, microservice-repo/transportador
       
